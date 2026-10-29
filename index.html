@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>12-Bar Blues Cheat Sheet</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #0f172a;
+            --grid-bg: #ffffff;
+            --border-color: #cbd5e1;
+            --chord-color: #1d4ed8;
+            --turnaround-color: #b91c1c;
+            --muted: #64748b;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: var(--text-color);
+        }
+
+        h3 {
+            margin: 0 0 0.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .controls label {
+            font-weight: bold;
+            margin-right: 0.5rem;
+        }
+
+        .controls select {
+            font-size: 1rem;
+            padding: 0.4rem 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--grid-bg);
+            color: var(--text-color);
+        }
+
+        .mode-toggle {
+            display: inline-flex;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .mode-toggle button {
+            font-size: 1rem;
+            padding: 0.4rem 1rem;
+            border: none;
+            background: var(--grid-bg);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .mode-toggle button.active {
+            background: var(--chord-color);
+            color: #fff;
+        }
+
+        .progression-container {
+            background: var(--grid-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            margin-bottom: 3rem;
+        }
+
+        .blues-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background-color: var(--border-color);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        .measure-wrapper {
+            position: relative;
+            background-color: var(--grid-bg);
+            display: flex;
+            flex-direction: column;
+            min-height: 120px;
+        }
+
+        .measure {
+            padding: 1.5rem 1rem 0.25rem;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--chord-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+        }
+
+        .numeral {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .alts {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            justify-content: center;
+            padding: 0.25rem 0.5rem 0.5rem;
+            min-height: 1.5rem;
+        }
+
+        .alt-chip {
+            font-size: 0.75rem;
+            background: #f1f5f9;
+            color: var(--muted);
+            border: 1px dashed var(--border-color);
+            border-radius: 999px;
+            padding: 0.1rem 0.5rem;
+        }
+
+        .turnaround {
+            display: flex;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--turnaround-color);
+        }
+
+        .turnaround span {
+            background: #fee2e2;
+            padding: 0.25rem 0.4rem;
+            border-radius: 4px;
+        }
+
+        .measure-number {
+            position: absolute;
+            font-size: 0.75rem;
+            color: var(--muted);
+            top: 0.5rem;
+            left: 0.5rem;
+        }
+
+        .measure-wrapper.playing {
+            background-color: #dbeafe;
+        }
+
+        .measure-wrapper {
+            transition: background-color 0.08s;
+        }
+
+        .transport {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.25rem;
+            justify-content: center;
+            align-items: center;
+            margin: -1rem 0 2rem;
+            padding: 0.75rem 1rem;
+            background: var(--grid-bg);
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+        }
+
+        .transport button#play-btn {
+            font-size: 1rem;
+            font-weight: bold;
+            padding: 0.5rem 1.25rem;
+            border: none;
+            border-radius: 4px;
+            background: var(--chord-color);
+            color: #fff;
+            cursor: pointer;
+            min-width: 6rem;
+        }
+
+        .transport button#play-btn.playing {
+            background: var(--turnaround-color);
+        }
+
+        .transport label {
+            font-weight: bold;
+        }
+
+        .transport input[type=range] {
+            vertical-align: middle;
+        }
+
+        .transport .bpm-value {
+            display: inline-block;
+            min-width: 2.5rem;
+        }
+
+        .legend {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .scale-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .tab {
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.9rem;
+            line-height: 1.25;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem 0.75rem;
+            margin: 0.4rem 0 0;
+            overflow-x: auto;
+            color: var(--text-color);
+        }
+
+        .tab .root {
+            color: var(--chord-color);
+            font-weight: bold;
+        }
+
+        .fretboard {
+            width: 100%;
+            height: auto;
+            margin-top: 0.5rem;
+            display: block;
+        }
+
+        .shapes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+
+        .shape-caption {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .section-heading {
+            margin-top: 1rem;
+            font-weight: bold;
+        }
+
+        .scale-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+
+        .scale-card .chord-title {
+            color: var(--chord-color);
+            font-size: 1.3rem;
+        }
+
+        .scale-card .chord-title small {
+            color: var(--muted);
+            font-weight: normal;
+            font-size: 0.85rem;
+        }
+
+        .scale-row {
+            margin-top: 0.75rem;
+        }
+
+        .scale-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--muted);
+        }
+
+        .scale-name {
+            font-weight: 600;
+        }
+
+        .scale-notes {
+            display: flex;
+            gap: 0.3rem;
+            margin-top: 0.25rem;
+        }
+
+        .scale-notes span {
+            background: #e0e7ff;
+            color: #1e3a8a;
+            border-radius: 4px;
+            padding: 0.1rem 0.45rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .scale-notes span.root {
+            background: var(--chord-color);
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>12-Bar Blues Reference</h1>
+
+    <div class="controls">
+        <div>
+            <label for="key-select">Key:</label>
+            <select id="key-select"></select>
+        </div>
+        <div class="mode-toggle" id="mode-toggle">
+            <button type="button" data-mode="major">Major</button>
+            <button type="button" data-mode="minor">Minor</button>
+        </div>
+        <div class="mode-toggle" id="chords-toggle">
+            <button type="button" data-chords="triads">Major / Minor</button>
+            <button type="button" data-chords="sevenths">7th chords</button>
+        </div>
+    </div>
+
+    <div class="transport">
+        <button type="button" id="play-btn">&#9654; Play</button>
+        <div>
+            <label for="bpm-input">Tempo:</label>
+            <input type="range" id="bpm-input" min="40" max="200" value="80">
+            <span class="bpm-value"><span id="bpm-value">80</span> BPM</span>
+        </div>
+        <label><input type="checkbox" id="click-toggle" checked> Click</label>
+        <label><input type="checkbox" id="chords-audio-toggle" checked> Chords</label>
+    </div>
+
+    <div class="progression-container">
+        <h2 id="key-title"></h2>
+        <div class="blues-grid" id="blues-grid"></div>
+        <p class="legend">Solid chord = the standard choice. Dashed chips = common alternatives you can swap in for that
+            bar.</p>
+    </div>
+
+    <div class="progression-container">
+        <h2>Pentatonic Scales to Play Over Each Chord</h2>
+        <div class="controls" style="margin-bottom: 1rem;">
+            <label>Position:</label>
+            <div class="mode-toggle" id="box-toggle">
+                <button type="button" data-box="0">All</button>
+                <button type="button" data-box="1">1</button>
+                <button type="button" data-box="2">2</button>
+                <button type="button" data-box="3">3</button>
+                <button type="button" data-box="4">4</button>
+                <button type="button" data-box="5">5</button>
+            </div>
+        </div>
+        <div class="scale-cards" id="scale-cards"></div>
+        <p class="legend">Highlighted note = the scale's root. The "home" scale (the key's minor pentatonic) works over
+            the whole progression. The chord-matched scales sound more targeted.</p>
+    </div>
+
+    <script>
+        // ---------- Music theory data ----------
+        const SHARP = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const FLAT = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+        const ROOT_LABELS = ["C", "C#/Db", "D", "D#/Eb", "E", "F", "F#/Gb", "G", "G#/Ab", "A", "A#/Bb", "B"];
+
+        // Keys that conventionally use flats (everything else uses sharps).
+        const FLAT_KEYS = {
+            major: new Set([5, 10, 3, 8, 1]),      // F, Bb, Eb, Ab, Db
+            minor: new Set([2, 7, 0, 5, 10, 3])    // Dm, Gm, Cm, Fm, Bbm, Ebm
+        };
+
+        // Semitone distance of each scale degree above the key root.
+        const SEMITONES = { I: 0, bII: 1, II: 2, bIII: 3, III: 4, IV: 5, bV: 6, V: 7, bVI: 8, VI: 9, bVII: 10 };
+        const ROMAN = { I: "I", II: "II", III: "III", IV: "IV", V: "V", VI: "VI", VII: "VII" };
+
+        const PENTATONIC = {
+            minor: { name: "minor pentatonic", steps: [0, 3, 5, 7, 10] },
+            major: { name: "major pentatonic", steps: [0, 2, 4, 7, 9] }
+        };
+
+        // A chord is { d: degree, q: quality suffix }.
+        const c = (d, q) => ({ d, q });
+
+        // 12-bar form: each measure has its chords and common alternatives.
+        const PROGRESSIONS = {
+            major: {
+                title: "Dominant 7ths",
+                measures: [
+                    { chords: [c("I", "7")], alts: [] },
+                    { chords: [c("I", "7")], alts: [c("IV", "7")] },     // quick change
+                    { chords: [c("I", "7")], alts: [] },
+                    { chords: [c("I", "7")], alts: [] },
+                    { chords: [c("IV", "7")], alts: [] },
+                    { chords: [c("IV", "7")], alts: [c("I", "7")] },
+                    { chords: [c("I", "7")], alts: [] },
+                    { chords: [c("I", "7")], alts: [c("VI", "7")] },     // VI7 leads into bar 9
+                    { chords: [c("V", "7")], alts: [] },
+                    { chords: [c("IV", "7")], alts: [c("V", "7")] },
+                    { chords: [c("I", "7")], alts: [] },
+                    { chords: [c("I", "7"), c("IV", "7"), c("I", "7"), c("V", "7")], alts: [c("V", "7")], turnaround: true }
+                ],
+                scales: {
+                    I: [{ root: "I", type: "minor", label: "Home / blues box" },
+                    { root: "I", type: "major", label: "Chord-matched (sweeter)" }],
+                    IV: [{ root: "I", type: "minor", label: "Home / blues box" },
+                    { root: "IV", type: "major", label: "Chord-matched (sweeter)" }],
+                    V: [{ root: "I", type: "minor", label: "Home / blues box" },
+                    { root: "V", type: "major", label: "Chord-matched (sweeter)" }]
+                }
+            },
+            minor: {
+                title: "Minor Blues",
+                measures: [
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("I", "m7")], alts: [c("IV", "m7")] },
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("IV", "m7")], alts: [] },
+                    { chords: [c("IV", "m7")], alts: [c("I", "m7")] },
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("V", "7")], alts: [c("bVI", "7")] },   // classic minor-blues color
+                    { chords: [c("IV", "m7")], alts: [c("V", "7")] },
+                    { chords: [c("I", "m7")], alts: [] },
+                    { chords: [c("I", "m7"), c("V", "7")], alts: [c("V", "7")], turnaround: true }
+                ],
+                scales: {
+                    I: [{ root: "I", type: "minor", label: "Home scale" }],
+                    IV: [{ root: "IV", type: "minor", label: "Chord-matched" },
+                    { root: "I", type: "minor", label: "Home scale (stay put)" }],
+                    V: [{ root: "I", type: "minor", label: "Home scale (tense)" },
+                    { root: "V", type: "major", label: "Chord-matched (resolves)" }]
+                }
+            }
+        };
+
+        // ---------- Helpers ----------
+        let state = loadState();
+
+        function loadState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem("bluesState"));
+                if (saved && saved.mode in PROGRESSIONS && saved.root >= 0 && saved.root < 12) {
+                    return {
+                        root: saved.root, mode: saved.mode,
+                        chords: saved.chords === "sevenths" ? "sevenths" : "triads",
+                        box: Number.isInteger(saved.box) && saved.box >= 0 && saved.box <= 5 ? saved.box : 1
+                    };
+                }
+            } catch (e) { /* ignore */ }
+            return { root: 9, mode: "major", chords: "triads", box: 1 };   // A major by default
+        }
+
+        function pretty(text) {
+            return text.replace(/#/g, "\u266F").replace(/(?<=[A-G])b/g, "\u266D");
+        }
+
+        function noteName(pc) {
+            const flats = FLAT_KEYS[state.mode].has(state.root);
+            return (flats ? FLAT : SHARP)[((pc % 12) + 12) % 12];
+        }
+
+        function degreePc(degree) {
+            return (state.root + SEMITONES[degree]) % 12;
+        }
+
+        // Chord suffix actually shown: plain major/minor triads, or the 7th version.
+        function suffix(chord) {
+            if (state.chords === "sevenths") return chord.q;
+            return chord.q.startsWith("m") ? "m" : "";
+        }
+
+        function chordName(chord) {
+            return pretty(noteName(degreePc(chord.d)) + suffix(chord));
+        }
+
+        function numeralFor(chord) {
+            const flat = chord.d.startsWith("b");
+            let base = ROMAN[flat ? chord.d.slice(1) : chord.d];
+            if (chord.q.startsWith("m")) base = base.toLowerCase();
+            return (flat ? "\u266D" : "") + base;
+        }
+
+        function scaleNotes(rootDegree, type) {
+            const rootPc = degreePc(rootDegree);
+            return PENTATONIC[type].steps.map(s => noteName(rootPc + s));
+        }
+
+        // ---------- Guitar / tab data (standard tuning) ----------
+        // Strings listed low to high: E A D G B e. Values are open-string pitch classes.
+        const STRING_PCS = [4, 9, 2, 7, 11, 4];
+        const STRING_NAMES = ["E", "A", "D", "G", "B", "e"];
+
+        // Barre shapes as fret offsets from the root fret (null = muted string).
+        const CHORD_SHAPES = {
+            "": [{ rootString: 0, label: "Root on 6th string", offsets: [0, 2, 2, 1, 0, 0] },
+            { rootString: 1, label: "Root on 5th string", offsets: [null, 0, 2, 2, 2, 0] }],
+            "m": [{ rootString: 0, label: "Root on 6th string", offsets: [0, 2, 2, 0, 0, 0] },
+            { rootString: 1, label: "Root on 5th string", offsets: [null, 0, 2, 2, 1, 0] }],
+            "7": [{ rootString: 0, label: "Root on 6th string", offsets: [0, 2, 0, 1, 0, 0] },
+            { rootString: 1, label: "Root on 5th string", offsets: [null, 0, 2, 0, 2, 0] }],
+            "m7": [{ rootString: 0, label: "Root on 6th string", offsets: [0, 2, 0, 0, 0, 0] },
+            { rootString: 1, label: "Root on 5th string", offsets: [null, 0, 2, 0, 1, 0] }]
+        };
+
+        // Fret on the given string where the note (pitch class) first appears (0-11).
+        function fretFor(pc, stringIdx) {
+            return (((pc - STRING_PCS[stringIdx]) % 12) + 12) % 12;
+        }
+
+        // Build a tab (6 lines, high e on top). columns: [{ cells: [fret|null|"x" per string], root: [bool per string] }]
+        function buildTab(columns) {
+            const pre = el("pre", "tab");
+            for (let s = 5; s >= 0; s--) {
+                pre.appendChild(document.createTextNode(STRING_NAMES[s] + "|--"));
+                columns.forEach(col => {
+                    const v = col.cells[s];
+                    if (v === null || v === undefined) {
+                        pre.appendChild(document.createTextNode("----"));
+                    } else {
+                        const text = String(v);
+                        const span = el("span", col.root && col.root[s] ? "root" : "", text);
+                        pre.appendChild(document.createTextNode("-"));
+                        pre.appendChild(span);
+                        pre.appendChild(document.createTextNode("-".repeat(3 - text.length)));
+                    }
+                });
+                pre.appendChild(document.createTextNode("-|" + (s > 0 ? "\n" : "")));
+            }
+            return pre;
+        }
+
+        // Chord voicing: one strummed column.
+        function chordTab(chord, shape) {
+            const pc = degreePc(chord.d);
+            const base = fretFor(pc, shape.rootString);
+            const cells = shape.offsets.map(o => (o === null ? "x" : o + base));
+            const root = shape.offsets.map((o, s) => s === shape.rootString);
+            const wrap = el("div", "shape");
+            wrap.appendChild(el("div", "shape-caption",
+                `${shape.label} \u2013 ${base === 0 ? "open position" : "barre at fret " + base}`));
+            wrap.appendChild(buildTab([{ cells, root }]));
+            return wrap;
+        }
+
+        // ---------- Pentatonic positions (boxes 1-5) ----------
+        const PENT_GAPS = [3, 2, 2, 3, 2];   // semitone gap from each minor-pentatonic note to the next
+        const MAX_FRET = 17;
+
+        // The 5 standard positions, numbered from the relative minor pentatonic (so a major
+        // pentatonic shares its positions with the minor pentatonic 3 semitones below it).
+        // Each position has 2 notes per string.
+        function pentBoxes(rootPc, type) {
+            const m = type === "minor" ? rootPc : (rootPc + 9) % 12;
+            const pcs = [0, 3, 5, 7, 10].map(s => (m + s) % 12);
+            const start0 = fretFor(pcs[0], 0);
+            return pcs.map((_, k) => {
+                let f0 = fretFor(pcs[k], 0);
+                if (k > 0 && f0 < start0 && f0 + 12 <= 12) f0 += 12;   // keep ascending along the neck when possible
+                const frets = [];
+                let prevMid = 0;
+                for (let s = 0; s < 6; s++) {
+                    const idx = (k + 2 * s) % 5;          // each string starts 2 scale notes higher
+                    let first;
+                    if (s === 0) {
+                        first = f0;
+                    } else {
+                        const base = fretFor(pcs[idx], s);
+                        first = [base, base + 12, base + 24].reduce(
+                            (a, b) => Math.abs(b - prevMid) < Math.abs(a - prevMid) ? b : a);
+                    }
+                    const second = first + PENT_GAPS[idx];
+                    frets.push([first, second]);
+                    prevMid = (first + second) / 2;
+                }
+                const all = frets.flat();
+                return { number: k + 1, frets, lo: Math.min(...all), hi: Math.max(...all) };
+            });
+        }
+
+        function scaleTab(rootPc, type) {
+            const boxes = pentBoxes(rootPc, type);
+            const box = boxes[(state.box || 1) - 1];
+            const columns = [];
+            box.frets.forEach((frets, s) => frets.forEach(f => {
+                const cells = [null, null, null, null, null, null];
+                cells[s] = f;
+                const isRoot = (STRING_PCS[s] + f) % 12 === rootPc;
+                columns.push({ cells, root: [0, 1, 2, 3, 4, 5].map(i => i === s && isRoot) });
+            }));
+            const wrap = el("div", "shape");
+            const note = state.box === 0 ? " \u2013 showing position 1 (pick a position above for others)" : "";
+            wrap.appendChild(el("div", "shape-caption",
+                `Position ${box.number}: play low to high, frets ${box.lo}\u2013${box.hi} (blue = root note)${note}`));
+            wrap.appendChild(buildTab(columns));
+            return wrap;
+        }
+
+        // Whole-neck diagram with note names. The selected position is highlighted.
+        function fretboard(rootPc, type) {
+            const NS = "http://www.w3.org/2000/svg";
+            const W = 720, H = 185, nutX = 46, top = 18, gap = 24;
+            const fw = (W - nutX - 10) / MAX_FRET;
+            const svg = document.createElementNS(NS, "svg");
+            svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+            svg.setAttribute("class", "fretboard");
+            const add = (tag, attrs, text) => {
+                const node = document.createElementNS(NS, tag);
+                for (const k in attrs) node.setAttribute(k, attrs[k]);
+                if (text !== undefined) node.textContent = text;
+                svg.appendChild(node);
+                return node;
+            };
+            const stringY = s => top + (5 - s) * gap;     // high e at the top
+            const fretX = f => f === 0 ? nutX - 17 : nutX + (f - 0.5) * fw;
+
+            add("rect", { x: nutX, y: top - 6, width: fw * MAX_FRET, height: gap * 5 + 12, fill: "#fef3c7" });
+            for (let f = 0; f <= MAX_FRET; f++) {
+                add("line", {
+                    x1: nutX + f * fw, x2: nutX + f * fw, y1: top - 6, y2: top + gap * 5 + 6,
+                    stroke: f === 0 ? "#0f172a" : "#94a3b8", "stroke-width": f === 0 ? 4 : 1
+                });
+            }
+            for (let s = 0; s < 6; s++) {
+                add("line", {
+                    x1: nutX, x2: nutX + fw * MAX_FRET, y1: stringY(s), y2: stringY(s),
+                    stroke: "#64748b", "stroke-width": 1 + (5 - s) * 0.25
+                });
+                add("text", { x: 8, y: stringY(s) + 4, "font-size": 12, fill: "#64748b" }, STRING_NAMES[s]);
+            }
+            const markerY = top + gap * 5 + 18;
+            [3, 5, 7, 9, 15, 17].forEach(f => add("circle", { cx: fretX(f), cy: markerY, r: 3, fill: "#cbd5e1" }));
+            [-6, 6].forEach(dx => add("circle", { cx: fretX(12) + dx, cy: markerY, r: 3, fill: "#cbd5e1" }));
+            for (let f = 1; f <= MAX_FRET; f++) {
+                add("text", { x: fretX(f), y: H - 4, "font-size": 10, "text-anchor": "middle", fill: "#94a3b8" }, f);
+            }
+
+            const set = new Set(PENTATONIC[type].steps.map(s => (rootPc + s) % 12));
+            const sel = state.box ? pentBoxes(rootPc, type)[state.box - 1] : null;
+            for (let s = 0; s < 6; s++) {
+                for (let f = 0; f <= MAX_FRET; f++) {
+                    const pc = (STRING_PCS[s] + f) % 12;
+                    if (!set.has(pc)) continue;
+                    const inBox = !sel || sel.frets[s].includes(f);
+                    const isRoot = pc === rootPc;
+                    add("circle", {
+                        cx: fretX(f), cy: stringY(s), r: 10,
+                        fill: isRoot ? "#1d4ed8" : "#ffffff", stroke: "#1d4ed8", "stroke-width": 1.5,
+                        opacity: inBox ? 1 : 0.15
+                    });
+                    add("text", {
+                        x: fretX(f), y: stringY(s) + 3.5, "font-size": 10, "font-weight": "bold",
+                        "text-anchor": "middle", fill: isRoot ? "#ffffff" : "#1e3a8a",
+                        opacity: inBox ? 1 : 0.2
+                    }, pretty(noteName(pc)));
+                }
+            }
+            return svg;
+        }
+
+        // ---------- Rendering ----------
+        function el(tag, className, text) {
+            const node = document.createElement(tag);
+            if (className) node.className = className;
+            if (text !== undefined) node.textContent = text;
+            return node;
+        }
+
+        function renderGrid() {
+            const prog = PROGRESSIONS[state.mode];
+            const keyName = pretty(noteName(state.root));
+            document.getElementById("key-title").textContent =
+                `Key of ${keyName}${state.mode === "minor" ? " Minor" : ""} (${prog.title})`;
+
+            const grid = document.getElementById("blues-grid");
+            grid.replaceChildren();
+
+            prog.measures.forEach((m, i) => {
+                const wrapper = el("div", "measure-wrapper");
+                wrapper.appendChild(el("span", "measure-number", i + 1));
+
+                const measure = el("div", "measure" + (m.turnaround ? " turnaround" : ""));
+                if (m.turnaround) {
+                    m.chords.forEach(ch => measure.appendChild(el("span", "", chordName(ch))));
+                } else {
+                    measure.textContent = chordName(m.chords[0]);
+                }
+                wrapper.appendChild(measure);
+
+                wrapper.appendChild(el("div", "numeral", m.chords.map(numeralFor).join(" ")));
+
+                const alts = el("div", "alts");
+                m.alts.forEach(a => alts.appendChild(
+                    el("span", "alt-chip", `${chordName(a)} (${numeralFor(a)})`)
+                ));
+                wrapper.appendChild(alts);
+
+                grid.appendChild(wrapper);
+            });
+            highlightBar(currentBar);
+        }
+
+        function renderScales() {
+            const prog = PROGRESSIONS[state.mode];
+            const container = document.getElementById("scale-cards");
+            container.replaceChildren();
+
+            // One card per unique chord in the main progression, in order of appearance.
+            const seen = new Map();
+            prog.measures.forEach(m => m.chords.forEach(ch => {
+                if (!seen.has(ch.d)) seen.set(ch.d, ch);
+            }));
+
+            for (const [degree, chord] of seen) {
+                const card = el("div", "scale-card");
+                const title = el("h3", "chord-title", chordName(chord) + " ");
+                title.appendChild(el("small", "", numeralFor(chord)));
+                card.appendChild(title);
+
+                card.appendChild(el("div", "section-heading", "Chord shapes"));
+                const shapes = el("div", "shapes");
+                CHORD_SHAPES[suffix(chord)].forEach(sh => shapes.appendChild(chordTab(chord, sh)));
+                card.appendChild(shapes);
+
+                card.appendChild(el("div", "section-heading", "Scales"));
+                prog.scales[degree].forEach(s => {
+                    const row = el("div", "scale-row");
+                    row.appendChild(el("div", "scale-label", s.label));
+                    const notes = scaleNotes(s.root, s.type);
+                    row.appendChild(el("div", "scale-name",
+                        `${pretty(notes[0])} ${PENTATONIC[s.type].name}`));
+                    const noteRow = el("div", "scale-notes");
+                    notes.forEach((n, idx) => noteRow.appendChild(el("span", idx === 0 ? "root" : "", pretty(n))));
+                    row.appendChild(noteRow);
+                    row.appendChild(scaleTab(degreePc(s.root), s.type));
+                    row.appendChild(fretboard(degreePc(s.root), s.type));
+                    card.appendChild(row);
+                });
+
+                container.appendChild(card);
+            }
+        }
+
+        function render() {
+            localStorage.setItem("bluesState", JSON.stringify(state));
+            document.getElementById("key-select").value = state.root;
+            document.querySelectorAll("#mode-toggle button").forEach(b =>
+                b.classList.toggle("active", b.dataset.mode === state.mode));
+            document.querySelectorAll("#chords-toggle button").forEach(b =>
+                b.classList.toggle("active", b.dataset.chords === state.chords));
+            document.querySelectorAll("#box-toggle button").forEach(b =>
+                b.classList.toggle("active", Number(b.dataset.box) === state.box));
+            renderGrid();
+            renderScales();
+        }
+
+        // ---------- Controls ----------
+        const keySelect = document.getElementById("key-select");
+        ROOT_LABELS.forEach((label, pc) => {
+            const opt = document.createElement("option");
+            opt.value = pc;
+            opt.textContent = pretty(label);
+            keySelect.appendChild(opt);
+        });
+        keySelect.addEventListener("change", e => { state.root = Number(e.target.value); render(); });
+
+        document.querySelectorAll("#mode-toggle button").forEach(b =>
+            b.addEventListener("click", () => { state.mode = b.dataset.mode; render(); }));
+
+        document.querySelectorAll("#chords-toggle button").forEach(b =>
+            b.addEventListener("click", () => { state.chords = b.dataset.chords; render(); }));
+
+        document.querySelectorAll("#box-toggle button").forEach(b =>
+            b.addEventListener("click", () => { state.box = Number(b.dataset.box); render(); }));
+
+        // ---------- Playback (Web Audio) ----------
+        const CHORD_INTERVALS = { "": [0, 4, 7], "m": [0, 3, 7], "7": [0, 4, 7, 10], "m7": [0, 3, 7, 10] };
+        const BEATS_PER_BAR = 4;
+        const midiToFreq = m => 440 * Math.pow(2, (m - 69) / 12);
+
+        let audioCtx = null;
+        let playing = false;
+        let schedulerTimer = null;
+        let nextBeatTime = 0;
+        let beatCounter = 0;       // counts beats through the 12-bar form, wrapping
+        let currentBar = -1;       // bar currently highlighted (-1 = none)
+        let bpm = 80;
+
+        function highlightBar(bar) {
+            document.querySelectorAll("#blues-grid .measure-wrapper").forEach((w, i) =>
+                w.classList.toggle("playing", i === bar));
+        }
+
+        function playClick(time, accent) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.frequency.value = accent ? 1500 : 1000;
+            gain.gain.setValueAtTime(0.0001, time);
+            gain.gain.exponentialRampToValueAtTime(accent ? 0.25 : 0.15, time + 0.002);
+            gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.05);
+            osc.connect(gain).connect(audioCtx.destination);
+            osc.start(time);
+            osc.stop(time + 0.06);
+        }
+
+        function playChord(time, duration, chord) {
+            const rootMidi = 48 + degreePc(chord.d);              // chord root around C3-B3
+            const notes = [rootMidi - 12, ...CHORD_INTERVALS[suffix(chord)].map(i => rootMidi + i)];
+            notes.forEach((midi, idx) => {
+                const osc = audioCtx.createOscillator();
+                const filter = audioCtx.createBiquadFilter();
+                const gain = audioCtx.createGain();
+                osc.type = "sawtooth";
+                osc.frequency.value = midiToFreq(midi);
+                filter.type = "lowpass";
+                filter.frequency.value = 1400;
+                const level = idx === 0 ? 0.12 : 0.06;
+                const end = time + duration * 0.95;
+                gain.gain.setValueAtTime(0.0001, time);
+                gain.gain.exponentialRampToValueAtTime(level, time + 0.02);
+                gain.gain.exponentialRampToValueAtTime(level * 0.5, time + duration * 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.0001, end);
+                osc.connect(filter).connect(gain).connect(audioCtx.destination);
+                osc.start(time);
+                osc.stop(end + 0.02);
+            });
+        }
+
+        function scheduleBeat(time) {
+            const bar = Math.floor(beatCounter / BEATS_PER_BAR) % 12;
+            const beatInBar = beatCounter % BEATS_PER_BAR;
+            const measure = PROGRESSIONS[state.mode].measures[bar];
+            const beatSec = 60 / bpm;
+
+            if (document.getElementById("click-toggle").checked) playClick(time, beatInBar === 0);
+
+            // Bars with several chords (the turnaround) split the 4 beats evenly.
+            const beatsPerChord = BEATS_PER_BAR / measure.chords.length;
+            if (beatInBar % beatsPerChord === 0 && document.getElementById("chords-audio-toggle").checked) {
+                playChord(time, beatsPerChord * beatSec, measure.chords[beatInBar / beatsPerChord]);
+            }
+
+            if (beatInBar === 0) {
+                setTimeout(() => { if (playing) { currentBar = bar; highlightBar(bar); } },
+                    Math.max(0, (time - audioCtx.currentTime) * 1000));
+            }
+            beatCounter = (beatCounter + 1) % (12 * BEATS_PER_BAR);
+        }
+
+        function scheduler() {
+            while (nextBeatTime < audioCtx.currentTime + 0.15) {
+                scheduleBeat(nextBeatTime);
+                nextBeatTime += 60 / bpm;
+            }
+        }
+
+        function startPlayback() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            audioCtx.resume();
+            playing = true;
+            beatCounter = 0;
+            nextBeatTime = audioCtx.currentTime + 0.1;
+            schedulerTimer = setInterval(scheduler, 25);
+            const btn = document.getElementById("play-btn");
+            btn.innerHTML = "&#9632; Stop";
+            btn.classList.add("playing");
+        }
+
+        function stopPlayback() {
+            playing = false;
+            clearInterval(schedulerTimer);
+            currentBar = -1;
+            highlightBar(-1);
+            const btn = document.getElementById("play-btn");
+            btn.innerHTML = "&#9654; Play";
+            btn.classList.remove("playing");
+        }
+
+        document.getElementById("play-btn").addEventListener("click", () =>
+            playing ? stopPlayback() : startPlayback());
+
+        document.getElementById("bpm-input").addEventListener("input", e => {
+            bpm = Number(e.target.value);
+            document.getElementById("bpm-value").textContent = bpm;
+        });
+
+        document.addEventListener("keydown", e => {
+            if (e.code === "Space" && !/^(SELECT|INPUT|BUTTON)$/.test(e.target.tagName)) {
+                e.preventDefault();
+                playing ? stopPlayback() : startPlayback();
+            }
+        });
+
+        render();
+    </script>
+
+</body>
+
+</html>
